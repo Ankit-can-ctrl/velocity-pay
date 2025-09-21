@@ -1,5 +1,6 @@
-import mongoose, { Document, model, Schema } from "mongoose";
+import mongoose, { Document, model, Schema, Types } from "mongoose";
 
+// extends document mean this object can also contain other attributes _id,timestamps etc
 export interface IUser extends Document {
   name: string;
   email: string;
