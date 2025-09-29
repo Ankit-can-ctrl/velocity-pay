@@ -2,6 +2,7 @@ import express from "express";
 import mainRouter from "./routes/index";
 import dotenv from "dotenv";
 import cors from "cors";
+import { connectDB } from "./lib/db";
 
 // to load all the .env variables in process.env
 dotenv.config();
@@ -20,4 +21,13 @@ app.use("/api/v1", mainRouter);
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT);
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`server running at port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect to DB, shutting down server.", err);
+    process.exit(1);
+  });

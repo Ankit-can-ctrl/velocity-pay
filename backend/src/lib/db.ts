@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 
-const MONGO_URI = process.env.MONGO_URI as string;
-
 /*========= global object in nodejs is similar to window in browser  */
 /*global object lives for the lifetime of your app  */
 /* so we can attach properties to it and can access them anywhere in our project */
@@ -16,23 +14,25 @@ if (!cached) {
   };
 }
 
-export async function connect() {
+export async function connectDB() {
   if (cached.conn) return cached.conn;
 
-  if (!cached) {
-    try {
-      cached.promise = mongoose.connect(MONGO_URI).then((m) => {
-        //m is the connected mongoose instance
-        console.log("DB connected :)");
-        return m;
-      });
-      console.log("DB connected successfully :)");
-    } catch (error) {
-      console.log("something went wrong while connecting to db:", error);
-      throw new Error("Failed to connect to DB :(");
-    }
+  const MONGO_URI = process.env.MONGO_URI as string;
+  if (!MONGO_URI) {
+    throw new Error("MONGO_URI is not set");
   }
 
-  cached.conn = await cached.promise;
-  return cached.conn;
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(MONGO_URI);
+  }
+
+  try {
+    cached.conn = await cached.promise;
+    console.log("DB connected successfully :)");
+    return cached.conn;
+  } catch (error) {
+    console.log("something went wrong while connecting to db:", error);
+    (cached as any).promise = null;
+    throw new Error("Failed to connect to DB :(");
+  }
 }
