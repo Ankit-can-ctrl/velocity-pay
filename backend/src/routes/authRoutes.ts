@@ -2,6 +2,8 @@ import express from "express";
 import { validateRequest } from "../middleware/validateRequest";
 import { signin, signup } from "../controller/authController";
 import z, { email } from "zod";
+import { authenticateToken } from "../middleware/authMiddleware";
+import { updateDetails } from "../controller/userController";
 
 const router = express.Router();
 
@@ -22,5 +24,6 @@ const signinSchema = z.object({
 
 router.use("/signup", validateRequest(signupSchema), signup);
 router.use("/signin", validateRequest(signinSchema), signin);
+router.put("/update", authenticateToken, updateDetails);
 
 export default router;
