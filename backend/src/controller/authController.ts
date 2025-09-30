@@ -4,9 +4,14 @@ import jwt from "jsonwebtoken";
 import User from "../models/User";
 
 export const signup = async (req: Request, res: Response) => {
-  const { name, email, password } = req.body;
+  const { name, username, email, password } = req.body;
 
   try {
+    // Check if username already exists
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername)
+      return res.status(400).json({ message: "Username already taken!" });
+
     const existingUser = await User.findOne({ email });
     if (existingUser)
       return res
@@ -14,7 +19,12 @@ export const signup = async (req: Request, res: Response) => {
         .json({ message: "Account with this email already exist!" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, password: hashedPassword });
+    const user = await User.create({
+      name,
+      username,
+      email,
+      password: hashedPassword,
+    });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, {
       expiresIn: "1h",

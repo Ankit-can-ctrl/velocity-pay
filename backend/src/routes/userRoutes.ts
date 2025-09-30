@@ -12,6 +12,7 @@ const router = express.Router();
 // signup schema
 const signupSchema = z.object({
   name: z.string().min(3),
+  username: z.string().min(3),
   email: z.email(),
   password: z.string().min(8),
 });
@@ -22,8 +23,8 @@ const signinSchema = z.object({
   password: z.string().min(8),
 });
 
-router.use("/signup", validateRequest(signupSchema), signup);
-router.use("/signin", validateRequest(signinSchema), signin);
+router.post("/signup", validateRequest(signupSchema), signup);
+router.post("/signin", validateRequest(signinSchema), signin);
 router.put("/update", authenticateToken, updateDetails);
 router.get("/search", authenticateToken, searchUser);
 

@@ -56,8 +56,8 @@ export const searchUser = async (req: Request, res: Response) => {
 
     // case sensitive regex search
     const users = await User.find(
-      { name: { $regex: query, $options: "i" } },
-      { name: 1, _id: 0 } //project only name not _id
+      { username: { $regex: query, $options: "i" } },
+      { username: 1, _id: 0 } //project only name not _id
     );
 
     res.json({ results: users });
