@@ -45,3 +45,25 @@ export const updateDetails = async (req: Request, res: Response) => {
       .json({ message: "Something went wrong while updating details." });
   }
 };
+
+export const searchUser = async (req: Request, res: Response) => {
+  try {
+    const query = req.query.q as string;
+
+    if (!query || query.trim() === "") {
+      return res.status(400).json({ message: "Search query is required." });
+    }
+
+    // case sensitive regex search
+    const users = await User.find(
+      { name: { $regex: query, $options: "i" } },
+      { name: 1, _id: 0 } //project only name not _id
+    );
+
+    res.json({ results: users });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Something went wrong while searching for user!" });
+  }
+};
