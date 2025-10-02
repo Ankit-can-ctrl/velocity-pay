@@ -1,11 +1,13 @@
 import { Response, Request } from "express";
 import Account from "../models/account";
 import mongoose from "mongoose";
+import User from "../models/User";
 
 export const getBalance = async (req: Request, res: Response) => {
   try {
     const userId = req.userId;
-    const account = await Account.findById({ user: userId });
+
+    const account = await Account.findOne({ user: userId });
 
     if (!account) return res.status(404).json({ message: "User not found." });
 
@@ -22,20 +24,25 @@ export const fundTransfer = async (req: Request, res: Response) => {
   session.startTransaction();
 
   try {
-    const { from, to, amount } = req.body;
-
-    if (from === to)
-      return res
-        .status(400)
-        .json({ message: "Sender and receiver cannot be same." });
+    const from = req.userId;
+    const { receiverDetails, amount } = req.body;
 
     if (!amount || amount == 0)
       return res
         .status(400)
         .json({ message: "Enter valid amount to transfer." });
 
-    const sender = await Account.findById({ user: from }).session(session);
-    const receiver = await Account.findById({ user: to }).session(session);
+    const to = await User.findOne({
+      $or: [{ username: receiverDetails }, { email: receiverDetails }],
+    });
+
+    if (from?.toString() === to?.toString())
+      return res
+        .status(400)
+        .json({ message: "Sender and receiver cannot be same." });
+
+    const sender = await Account.findOne({ user: from }).session(session);
+    const receiver = await Account.findOne({ user: to }).session(session);
 
     if (!sender || !receiver)
       return res
