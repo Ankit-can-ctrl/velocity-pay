@@ -5,11 +5,13 @@ import User from "../models/User";
 import Account from "../models/account";
 
 function getRandomBalance(min = 1000, max = 10000) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
+  const amount = Math.floor(Math.random() * (max - min + 1) + min);
+  return amount * 100;
 }
 
 function getRandomSigninBalance(min = 1000, max = 5000) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
+  const amount = Math.floor(Math.random() * (max - min + 1) + min);
+  return amount * 100;
 }
 
 export const signup = async (req: Request, res: Response) => {
