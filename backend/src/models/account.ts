@@ -13,6 +13,11 @@ const accountSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
+    vid: {
+      type: String,
+      // required: true,
+      lowercase: true,
+    },
     balance: {
       type: Number,
       required: true,

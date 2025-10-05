@@ -12,7 +12,6 @@ const router = express.Router();
 // signup schema
 const signupSchema = z.object({
   name: z.string().min(3),
-  username: z.string().min(3),
   email: z.email(),
   password: z.string().min(8),
 });
